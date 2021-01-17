@@ -5,7 +5,13 @@
 //  Created by Harley.xk on 2017/11/7.
 //
 
+#if canImport(UIKit)
 import UIKit
+#endif
+
+#if canImport(Cocoa)
+import Cocoa
+#endif
 import Metal
 import simd
 

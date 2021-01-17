@@ -15,7 +15,7 @@ public final class GlowingBrush: Brush {
     public var coreProportion: CGFloat = 0.25
 
     /// color of core lines, defaults to white
-    public var coreColor: UIColor = .white {
+    public var coreColor: Color = .white {
         didSet {
             subBrush.color = coreColor
         }
@@ -78,11 +78,12 @@ public final class GlowingBrush: Brush {
         pendingCoreLines.append(contentsOf: lines)
         return shadowLines + coreLines
     }
-    
+    #if os(iOS)
     public override func finishLineStrip(at end: Pan) -> [MLLine] {
         let lines = pendingCoreLines
         pendingCoreLines.removeAll()
         return lines
     }
+    #endif
 }
 

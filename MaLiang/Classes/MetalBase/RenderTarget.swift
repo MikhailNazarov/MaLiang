@@ -5,7 +5,13 @@
 //  Created by Harley-xk on 2019/4/15.
 //
 
+#if canImport(UIKit)
 import UIKit
+#endif
+
+#if canImport(Cocoa)
+import Cocoa
+#endif
 import Foundation
 import Metal
 import simd
@@ -79,7 +85,11 @@ open class RenderTarget {
     }
     
     internal func updateTransformBuffer() {
+        #if os(iOS)
         let scaleFactor = UIScreen.main.nativeScale
+        #else
+        let scaleFactor = CGFloat(1.0)
+        #endif
         var transform = ScrollingTransform(offset: contentOffset * scaleFactor, scale: scale)
         transform_buffer = device?.makeBuffer(bytes: &transform, length: MemoryLayout<ScrollingTransform>.stride, options: [])
     }

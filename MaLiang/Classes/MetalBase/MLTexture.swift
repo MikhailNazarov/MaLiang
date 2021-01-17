@@ -7,7 +7,13 @@
 
 import Foundation
 import Metal
+#if canImport(UIKit)
 import UIKit
+#endif
+
+#if canImport(Cocoa)
+import Cocoa
+#endif
 
 /// texture with UUID
 open class MLTexture: Hashable {
@@ -23,7 +29,12 @@ open class MLTexture: Hashable {
 
     // size of texture in points
     open lazy var size: CGSize = {
+        
+        #if os(iOS)
         let scaleFactor = UIScreen.main.nativeScale
+        #else
+        let scaleFactor = CGFloat(1.0)
+        #endif
         return CGSize(width: CGFloat(texture.width) / scaleFactor, height: CGFloat(texture.height) / scaleFactor)
     }()
 
@@ -55,18 +66,24 @@ public extension MTLTexture {
     }
     
     /// get UIImage from this texture
-    func toUIImage() -> UIImage? {
+    func toMImage() -> MImage? {
         guard let cgimage = toCGImage() else {
             return nil
         }
-        return UIImage(cgImage: cgimage)
+        #if os(iOS)
+        return MImage(cgImage: cgimage)
+        #else
+        return MImage(cgImage: cgimage, size: NSSize(width: cgimage.width, height: cgimage.height) )
+        #endif
     }
     
+    #if os(iOS)
     /// get data from this texture
     func toData() -> Data? {
-        guard let image = toUIImage() else {
+        guard let image = toMImage() else {
             return nil
         }
         return image.pngData()
     }
+    #endif
 }

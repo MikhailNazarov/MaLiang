@@ -4,9 +4,8 @@
 //
 //  Created by Harley.xk on 2018/5/3.
 //
-
+#if canImport(UIKit)
 import UIKit.UIGestureRecognizerSubclass
-
 
 open class PaintingGestureRecognizer: UIPanGestureRecognizer {
 
@@ -72,3 +71,4 @@ open class PaintingGestureRecognizer: UIPanGestureRecognizer {
         super.touchesEnded(touches, with: event)
     }
 }
+#endif

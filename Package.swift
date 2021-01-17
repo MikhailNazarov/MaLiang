@@ -5,7 +5,14 @@ import PackageDescription
 
 let package = Package(
     name: "MaLiang",
+    
+    platforms: [
+        .macOS(SupportedPlatform.MacOSVersion.v10_11),
+        .iOS(SupportedPlatform.IOSVersion.v10)
+    ],
+    
     products: [
+        
         // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
             name: "MaLiang",
@@ -20,9 +27,11 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "MaLiang",
-            dependencies: []),
+            dependencies: [],
+            path: "MaLiang/Classes"),
         .testTarget(
             name: "MaLiangTests",
-            dependencies: ["MaLiang"]),
+            dependencies: ["MaLiang"],
+            path: "MaLiang/Tests"),
     ]
 )

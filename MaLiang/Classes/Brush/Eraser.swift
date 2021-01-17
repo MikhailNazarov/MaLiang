@@ -7,7 +7,14 @@
 //
 
 import Foundation
+#if canImport(UIKit)
 import UIKit
+#endif
+
+#if canImport(Cocoa)
+import Cocoa
+#endif
+
 import Metal
 
 open class Eraser: Brush {

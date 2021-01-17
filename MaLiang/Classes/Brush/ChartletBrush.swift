@@ -4,9 +4,10 @@
 //
 //  Created by Harley-xk on 2020/10/26.
 //
-
+#if os(iOS)
 import Foundation
 import CoreGraphics
+
 import UIKit
 
 /// A Brush that can draw specified chartlets on canvas
@@ -40,7 +41,7 @@ open class ChartletBrush: Printer {
         target: Canvas
     ) throws {
         let textureIDs = try imageNames.compactMap { name -> String in
-            guard let image = UIImage(named: name) else {
+            guard let image = MImage(named: name) else {
                 throw MLError.imageNotExists(name)
             }
             guard let data = image.pngData() else {
@@ -115,3 +116,4 @@ open class ChartletBrush: Printer {
         }
     }
 }
+#endif

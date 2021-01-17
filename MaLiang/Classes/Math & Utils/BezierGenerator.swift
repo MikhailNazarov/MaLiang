@@ -5,7 +5,13 @@
 //  Created by Harley.xk on 2017/11/10.
 //
 
+#if canImport(UIKit)
 import UIKit
+#endif
+
+#if canImport(Cocoa)
+import Cocoa
+#endif
 
 class BezierGenerator {
 

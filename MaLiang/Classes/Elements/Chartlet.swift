@@ -6,7 +6,13 @@
 //
 
 import Foundation
+#if canImport(UIKit)
 import UIKit
+#endif
+
+#if canImport(Cocoa)
+import Cocoa
+#endif
 import Metal
 
 /// not implemented yet
@@ -41,7 +47,13 @@ open class Chartlet: CanvasElement {
     }
     
     lazy var vertex_buffer: MTLBuffer? = {
+       
+        
+        #if os(iOS)
         let scale = canvas?.printer.target?.contentScaleFactor ?? UIScreen.main.nativeScale
+        #else
+        let scale = CGFloat(1.0)
+        #endif
         
         let center = self.center * scale
         let halfSize = self.size * scale * 0.5

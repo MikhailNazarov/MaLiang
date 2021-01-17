@@ -6,7 +6,17 @@
 //  Copyright © 2018年 CocoaPods. All rights reserved.
 //
 
+#if canImport(UIKit)
 import UIKit
+public typealias MView = UIView
+public typealias MVisualEffectView = UIVisualEffectView
+#endif
+
+#if canImport(Cocoa)
+import Cocoa
+public typealias MView = NSView
+public typealias MVisualEffectView = NSVisualEffectView
+#endif
 
 open class ScrollableCanvas: Canvas {
     
@@ -17,12 +27,14 @@ open class ScrollableCanvas: Canvas {
         
         contentSize = bounds.size
         
+        #if os(iOS)
         pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinchGestureRecognizer(_:)))
         addGestureRecognizer(pinchGesture)
         
         moveGesture = UIPanGestureRecognizer(target: self, action: #selector(handleMoveGestureRecognizer(_:)))
         moveGesture.minimumNumberOfTouches = 2
         addGestureRecognizer(moveGesture)
+        #endif
     }
     
     /// the max zoomScale of canvas, will cause redraw if the new value is less than current
@@ -48,21 +60,21 @@ open class ScrollableCanvas: Canvas {
             updateScrollIndicators()
         }
     }
-    
+    #if os(iOS)
     /// get snapthot image for the same size to content
-    open override func snapshot() -> UIImage? {
+    open override func snapshot() -> MImage? {
         /// create a new render target with same size to the content, for snapshoting
         let target = SnapshotTarget(canvas: self)
         return target.getImage()
     }
-    
+   
     private var pinchGesture: UIPinchGestureRecognizer!
     private var moveGesture: UIPanGestureRecognizer!
-    
+    #endif
     private var currentZoomScale: CGFloat = 1
     private var offsetAnchor: CGPoint = .zero
     private var beginLocation: CGPoint = .zero
-    
+    #if os(iOS)
     @objc private func handlePinchGestureRecognizer(_ gesture: UIPinchGestureRecognizer) {
         let location = gesture.location(in: self)
         switch gesture.state {
@@ -119,7 +131,7 @@ open class ScrollableCanvas: Canvas {
         default: hidesScrollIndicators()
         }
     }
-    
+    #endif
     private var maxOffset: CGPoint {
         return CGPoint(x: contentSize.width * zoom - bounds.width, y: contentSize.height * zoom - bounds.height)
     }
@@ -134,22 +146,38 @@ open class ScrollableCanvas: Canvas {
     // defaults to true if height of contentSize is larger than bounds
     open var showVerticalScrollIndicator = true
     
-    private weak var horizontalScrollIndicator: UIView!
-    private weak var verticalScrollIndicator: UIView!
+    private weak var horizontalScrollIndicator: MView!
+    private weak var verticalScrollIndicator: MView!
     
     private func setupScrollIndicators() {
         
         // horizontal scroll indicator
-        let horizontalScrollIndicator = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
+        #if os(iOS)
+        let horizontalScrollIndicator = MVisualEffectView(effect: UIBlurEffect(style: .dark))
         horizontalScrollIndicator.layer.cornerRadius = 2
         horizontalScrollIndicator.clipsToBounds = true
+        #else
+        let horizontalScrollIndicator = MVisualEffectView()
+        horizontalScrollIndicator.layer?.cornerRadius = 2
+        //horizontalScrollIndicator.clipsToBounds = true
+        #endif
+        
+        
         addSubview(horizontalScrollIndicator)
         self.horizontalScrollIndicator = horizontalScrollIndicator
         
         // vertical scroll indicator
-        let verticalScrollIndicator = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
+        #if os(iOS)
+        let verticalScrollIndicator = MVisualEffectView(effect: UIBlurEffect(style: .dark))
         verticalScrollIndicator.layer.cornerRadius = 2
         verticalScrollIndicator.clipsToBounds = true
+        #else
+        let verticalScrollIndicator = MVisualEffectView()
+        verticalScrollIndicator.layer?.cornerRadius = 2
+        //verticalScrollIndicator.clipsToBounds = true
+        #endif
+        
+       
         addSubview(verticalScrollIndicator)
         self.verticalScrollIndicator = verticalScrollIndicator
         
@@ -188,14 +216,25 @@ open class ScrollableCanvas: Canvas {
     }
     
     private func showScrollIndicators() {
+        #if os(iOS)
         horizontalScrollIndicator.alpha = 0.8
         verticalScrollIndicator.alpha = 0.8
+        #else
+        horizontalScrollIndicator.alphaValue = 0.8
+        verticalScrollIndicator.alphaValue = 0.8
+        #endif
     }
     
     private func hidesScrollIndicators() {
-        UIView.animate(withDuration: 0.1, delay: 0, options: [.curveEaseInOut, .beginFromCurrentState], animations: {
+        #if os(iOS)
+        MView.animate(withDuration: 0.1, delay: 0, options: [.curveEaseInOut, .beginFromCurrentState], animations: {
             self.horizontalScrollIndicator.alpha = 0
             self.verticalScrollIndicator.alpha = 0
         })
+        #else
+        //todo: animation
+        self.horizontalScrollIndicator.alphaValue = 0
+        self.verticalScrollIndicator.alphaValue = 0
+        #endif
     }
 }

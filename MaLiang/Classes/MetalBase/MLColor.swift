@@ -7,7 +7,15 @@
 
 import Foundation
 import simd
+#if canImport(UIKit)
 import UIKit
+public typealias Color = UIColor
+#endif
+
+#if canImport(Cocoa)
+import Cocoa
+public typealias Color = NSColor
+#endif
 
 public struct MLColor: Codable {
     public internal(set) var red: Float
@@ -15,8 +23,8 @@ public struct MLColor: Codable {
     public internal(set) var blue: Float
     public internal(set) var alpha: Float
     
-    public static var black = UIColor.black.toMLColor()
-    public static var white = UIColor.white.toMLColor()
+    public static var black = Color.black.toMLColor()
+    public static var white = Color.white.toMLColor()
     
     public func toFloat4() -> vector_float4 {
         return vector_float4(red, green, blue, alpha)
@@ -55,7 +63,7 @@ public struct MLColor: Codable {
     }
 }
 
-extension UIColor {
+extension Color {
     
     var sRGB: CGColor {
         return cgColor.converted(

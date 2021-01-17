@@ -5,7 +5,16 @@
 //  Created by Harley.xk on 2018/4/11.
 //
 
+#if canImport(UIKit)
 import UIKit
+public typealias MImage = UIImage
+#endif
+
+#if canImport(Cocoa)
+import Cocoa
+public typealias MImage = NSImage
+#endif
+
 
 open class Canvas: MetalView {
     
@@ -16,7 +25,7 @@ open class Canvas: MetalView {
     
     /// printer to print image textures on canvas
     open private(set) var printer: Printer!
-    
+    #if os(iOS)
     /// pencil only mode for apple pencil, defaults to false
     /// if sets to true, all touches with toucheType that is not pencil will be ignored
     open var isPencilMode = false {
@@ -27,12 +36,18 @@ open class Canvas: MetalView {
         }
     }
     
+    
     open var useFingersToErase = false
+    #endif
     
     /// the actural size of canvas in points, may larger than current bounds
     /// size must between bounds size and 5120x5120
     open var size: CGSize {
+        #if os(iOS)
         return drawableSize / contentScaleFactor
+        #else
+        return drawableSize
+        #endif
     }
     
     // delegate & observers
@@ -157,10 +172,11 @@ open class Canvas: MetalView {
             screenTarget?.contentOffset = newValue
         }
     }
-    
+    #if os(iOS)
     // setup gestures
     open var paintingGesture: PaintingGestureRecognizer?
     open var tapGesture: UITapGestureRecognizer?
+    #endif
     
     /// this will setup the canvas and gestures、default brushs
     open override func setup() {
@@ -175,15 +191,17 @@ open class Canvas: MetalView {
         
         data = CanvasData()
     }
-    
+    #if os(iOS)
     /// take a snapshot on current canvas and export an image
-    open func snapshot() -> UIImage? {
+    open func snapshot() -> MImage? {
+        
         UIGraphicsBeginImageContextWithOptions(bounds.size, false, contentScaleFactor)
         drawHierarchy(in: bounds, afterScreenUpdates: true)
         let image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         return image
     }
+    #endif
     
     /// clear all things on the canvas
     ///
@@ -196,10 +214,12 @@ open class Canvas: MetalView {
         }
     }
     
+    #if os(iOS)
     open override func layoutSubviews() {
         super.layoutSubviews()
         redraw()
     }
+    #endif
     
     // MARK: - Document
     public private(set) var data: CanvasData!
@@ -296,11 +316,16 @@ open class Canvas: MetalView {
         data.append(chartlet: chartlet, grouped: grouped)
         chartlet.drawSelf(on: screenTarget)
         screenTarget?.commitCommands()
+        #if os(iOS)
         setNeedsDisplay()
+        #else
+        setNeedsDisplay(self.bounds)
+        #endif
         
         actionObservers.canvas(self, didRenderChartlet: chartlet)
     }
     
+    #if os(iOS)
     // MARK: - Touches
     override open func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let pan = firstAvaliablePan(from: touches) else {
@@ -346,4 +371,5 @@ open class Canvas: MetalView {
         }
         return Pan(touch: t, on: self)
     }
+    #endif
 }

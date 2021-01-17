@@ -6,7 +6,9 @@
 //
 
 import Foundation
+#if os(iOS)
 import UIKit
+
 
 /// Snapshoting Target, used for snapshot
 open class SnapshotTarget: RenderTarget {
@@ -26,9 +28,9 @@ open class SnapshotTarget: RenderTarget {
     /// get UIImage from canvas content
     ///
     /// - Returns: UIImage, nil if failed
-    open func getImage() -> UIImage? {
+    open func getImage() -> MImage? {
         syncContent()
-        return texture?.toUIImage()
+        return texture?.toMImage()
     }
     
     /// get CIImage from canvas content
@@ -44,9 +46,9 @@ open class SnapshotTarget: RenderTarget {
     }
 
     /// get UIImage of single CanvasElement
-    open func getImage(canvasElement: CanvasElement) -> UIImage? {
+    open func getImage(canvasElement: CanvasElement) -> MImage? {
         syncContent(canvasElement: canvasElement)
-        return texture?.toUIImage()
+        return texture?.toMImage()
     }
 
     /// get CIImage of single CanvasElement
@@ -74,3 +76,4 @@ open class SnapshotTarget: RenderTarget {
         commitCommands()
     }
 }
+#endif

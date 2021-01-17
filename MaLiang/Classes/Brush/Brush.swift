@@ -7,8 +7,15 @@
 
 import Foundation
 import MetalKit
+#if canImport(UIKit)
 import UIKit
+#endif
 
+#if canImport(Cocoa)
+import Cocoa
+#endif
+
+#if os(iOS)
 public struct Pan {
     
     var point: CGPoint
@@ -33,6 +40,7 @@ public struct Pan {
         self.force = force
     }
 }
+#endif
 
 open class Brush {
     
@@ -72,7 +80,7 @@ open class Brush {
     open var forceOnTap: CGFloat = 1
     
     /// color of stroke
-    open var color: UIColor = .black {
+    open var color: Color = .black {
         didSet {
             updateRenderingColor()
         }
@@ -115,13 +123,14 @@ open class Brush {
     open func use() {
         target?.currentBrush = self
     }
-    
+    #if os(iOS)
     /// get a line with specified begin and end location with force info
     open func makeLine(from: Pan, to: Pan) -> [MLLine] {
         let endForce = from.force * 0.95 + to.force * 0.05
         let forceRate = pow(endForce, forceSensitive)
         return makeLine(from: from.point, to: to.point, force: forceRate)
     }
+    #endif
     
     /// make lines to render with specified begin and end location
     ///
@@ -142,10 +151,12 @@ open class Brush {
         return [line]
     }
     
+    #if os(iOS)
     /// some brush may have cached unfinished lines, return them here
     open func finishLineStrip(at end: Pan) -> [MLLine] {
         return []
     }
+    #endif
 
     private var canvasScale: CGFloat {
         return target?.screenTarget?.scale ?? 1
@@ -251,8 +262,9 @@ open class Brush {
     // optimize stroke with bezier path, defaults to true
     //    private var enableBezierPath = true
     private var bezierGenerator = BezierGenerator()
-    
+    #if os(iOS)
     // MARK: - Drawing Actions
+    
     private var lastRenderedPan: Pan?
     
     private func pushPoint(_ point: CGPoint, to bezier: BezierGenerator, force: CGFloat, isEnd: Bool = false, on canvas: Canvas) {
@@ -282,11 +294,12 @@ open class Brush {
         }
         render(lines: lines, on: canvas)
     }
+    #endif
     
     open func render(lines: [MLLine], on canvas: Canvas) {
         canvas.render(lines: lines)
     }
-
+    #if os(iOS)
     // MARK: - Touches
 
     // called when touches began event triggered on canvas
@@ -326,15 +339,17 @@ open class Brush {
             canvas.render(lines: unfishedLines)
         }
     }
+    #endif
 }
 
 // MARK: - Deprecated
 extension Brush {
+    #if os(iOS)
     @available(*, deprecated, message: "", renamed: "makeLine(from:to:)")
     open func pan(from: Pan, to: Pan) -> MLLine {
         return makeLine(from: from, to: to).first!
     }
-    
+    #endif
     @available(*, deprecated, message: "", renamed: "makeLine(from:to:force:)")
     open func line(from: CGPoint, to: CGPoint, force: CGFloat = 1) -> MLLine {
         return makeLine(from: from, to: to, force: force).first!

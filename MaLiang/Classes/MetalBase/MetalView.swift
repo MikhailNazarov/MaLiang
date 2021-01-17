@@ -6,7 +6,13 @@
 //  Copyright © 2019 Harley-xk. All rights reserved.
 //
 
+#if canImport(UIKit)
 import UIKit
+#endif
+
+#if canImport(Cocoa)
+import Cocoa
+#endif
 import QuartzCore
 import MetalKit
 
@@ -35,22 +41,34 @@ open class MetalView: MTKView {
     open func clear(display: Bool = true) {
         screenTarget?.clear()
         if display {
+            #if os(iOS)
             setNeedsDisplay()
+            #else
+            setNeedsDisplay(self.bounds)
+            #endif
         }
     }
 
     // MARK: - Render
     
+    #if os(iOS)
     open override func layoutSubviews() {
         super.layoutSubviews()
         screenTarget?.updateBuffer(with: drawableSize)
     }
 
-    open override var backgroundColor: UIColor? {
+    open override var backgroundColor: Color? {
         didSet {
             clearColor = (backgroundColor ?? .black).toClearColor()
         }
     }
+    #else
+    open var backgroundColor: Color? {
+        didSet {
+            clearColor = (backgroundColor ?? .black).toClearColor()
+        }
+    }
+    #endif
 
     // MARK: - Setup
     
@@ -73,7 +91,9 @@ open class MetalView: MTKView {
         }
         
         device = sharedDevice
+        #if os(iOS)
         isOpaque = false
+        #endif
 
         screenTarget = RenderTarget(size: drawableSize, pixelFormat: colorPixelFormat, device: device)
         commandQueue = device?.makeCommandQueue()

@@ -7,7 +7,13 @@
 
 import Foundation
 import Metal
+#if canImport(UIKit)
 import UIKit
+#endif
+
+#if canImport(Cocoa)
+import Cocoa
+#endif
 
 /// a line strip with lines and brush info
 open class LineStrip: CanvasElement {
@@ -62,6 +68,14 @@ open class LineStrip: CanvasElement {
     
     private var vertex_buffer: MTLBuffer?
     
+    private var nativeScale: Float{
+        #if os(iOS)
+        return UIScreen.main.nativeScale
+        #else
+        return 1.0
+        #endif
+    }
+    
     private func remakBuffer(rotation: Brush.Rotation) {
         
         guard lines.count > 0 else {
@@ -71,7 +85,11 @@ open class LineStrip: CanvasElement {
         var vertexes: [Point] = []
         
         lines.forEach { (line) in
-            let scale = brush?.target?.contentScaleFactor ?? UIScreen.main.nativeScale
+            #if os(iOS)
+            let scale = brush?.target?.contentScaleFactor ?? nativeScale
+            #else
+            let scale = CGFloat(1.0)
+            #endif
             let count = max(line.length / line.pointStep, 1)
             
             var line = line

@@ -6,7 +6,14 @@
 //
 
 import Foundation
+#if canImport(UIKit)
 import UIKit
+#endif
+
+#if canImport(Cocoa)
+import Cocoa
+#endif
+
 
 /// Delegate for rendering
 public protocol RenderingDelegate: AnyObject {

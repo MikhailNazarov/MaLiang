@@ -27,7 +27,7 @@ class Renderer: NSObject {
         super.init()
         canvas.delegate = self
         
-        let backgroundColor = canvas.backgroundColor ?? .white
+        let backgroundColor = canvas.backgroundColor ?? Color.white
         let descriptor = canvas.currentRenderPassDescriptor
         descriptor?.colorAttachments[0].clearColor = backgroundColor.toClearColor()
         descriptor?.colorAttachments[0].loadAction = .load

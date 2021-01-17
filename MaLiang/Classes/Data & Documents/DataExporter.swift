@@ -24,7 +24,7 @@ open class DataExporter {
     
     private var content: CanvasContent
     private var textures: [MLTexture]
-
+    #if os(iOS)
     /// Save contents to disk
     ///
     /// - Parameters:
@@ -97,4 +97,5 @@ open class DataExporter {
         
         reportProgress(1, on: progress)
     }
+    #endif
 }
