@@ -28,7 +28,8 @@ let package = Package(
         .target(
             name: "MaLiang",
             dependencies: [],
-            path: "MaLiang/Classes"),
+            path: "MaLiang/Classes",
+            resources: [.process("MaLiang/Classes/MetalBase/Shaders.metal")]),
         .testTarget(
             name: "MaLiangTests",
             dependencies: ["MaLiang"],
