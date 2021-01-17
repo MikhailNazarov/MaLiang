@@ -7,7 +7,7 @@ let package = Package(
     name: "MaLiang",
     
     platforms: [
-        .macOS(SupportedPlatform.MacOSVersion.v10_11),
+        .macOS(SupportedPlatform.MacOSVersion.v10_12),
         .iOS(SupportedPlatform.IOSVersion.v10)
     ],
     
@@ -29,7 +29,7 @@ let package = Package(
             name: "MaLiang",
             dependencies: [],
             path: "MaLiang/Classes",
-            resources: [.process("MaLiang/Classes/MetalBase/Shaders.metal")]),
+            resources: [.process("MetalBase/Shaders.metal")]),
         .testTarget(
             name: "MaLiangTests",
             dependencies: ["MaLiang"],
